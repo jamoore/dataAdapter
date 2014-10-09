@@ -16,20 +16,22 @@ try
   string returnID="";
   string returnMessage = "";
 
-	int projectID=extranetData.getInt(context.Request["projectID"]); 
-	int itemType=extranetData.getInt(context.Request["itemType"]); 
+	int id=extranetData.getInt(context.Request["id"]); 
+	int projectItemID=extranetData.getInt(context.Request["projectItemID"]); 
+	string name=extranetData.getStringFromObject(context.Request["name"]); 
 	string title=extranetData.getStringFromObject(context.Request["title"]); 
 	string description=extranetData.getStringFromObject(context.Request["description"]); 
-	string html=extranetData.getStringFromObject(context.Request["html"]); 
+	string directory=extranetData.getStringFromObject(context.Request["directory"]); 
+	string isAchived=extranetData.getStringFromObject(context.Request["isAchived"]); 
 
 
 
-	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"),+",projectID: "+projectID+",itemType: "+itemType+",title: "+title+",description: "+description+",html: "+html);
+	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"),+",id: "+id+",projectItemID: "+projectItemID+",name: "+name+",title: "+title+",description: "+description+",directory: "+directory+",isAchived: "+isAchived);
 
 
 
 
-	returnMessage= extranetData.InsertProjectItem( ref returnID , projectID, itemType, title, description, html);
+	returnMessage= extranetData.InsertSlideshow( ref returnID , id, projectItemID, name, title, description, directory, isAchived);
 
 	if(returnMessage!="")
 	{
@@ -41,6 +43,9 @@ try
 	{
 		result.success=true;
 	}
+
+
+
 }
 catch (Exception ex)
 {
@@ -49,8 +54,10 @@ catch (Exception ex)
 
 li.Add(result);
 string sJSON = oSerializer.Serialize(li);
-context.Response.Write(sJSON);              
-public string InsertProjectItem( ref string returnID , int projectID, int itemType, string title, string description, string html)
+context.Response.Write(sJSON);  
+
+
+public string InsertSlideshow( ref string returnID , int id, int projectItemID, string name, string title, string description, string directory, string isAchived)
 
 {string returnMessage = "";
 
@@ -61,25 +68,28 @@ queryCommand.CommandType = CommandType.StoredProcedure;
 try
 {
 	thisConnection.Open();
-	queryCommand.CommandText = "Extranet_InsertProjectItem";
-	queryCommand.Parameters.Add("@projectID", SqlDbType.Int );
-	queryCommand.Parameters.Add("@itemType", SqlDbType.Int );
-	queryCommand.Parameters.Add("@title", SqlDbType.Text, 500);
+	queryCommand.CommandText = "Extranet_InsertSlideshow";
+	queryCommand.Parameters.Add("@id", SqlDbType.Int );
+	queryCommand.Parameters.Add("@projectItemID", SqlDbType.Int );
+	queryCommand.Parameters.Add("@name", SqlDbType.Text, 500);
+	queryCommand.Parameters.Add("@title", SqlDbType.Text, 250);
 	queryCommand.Parameters.Add("@description", SqlDbType.Text);
-	queryCommand.Parameters.Add("@html", SqlDbType.Text);
+	queryCommand.Parameters.Add("@directory", SqlDbType.Text, 250);
 
 
-	queryCommand.Parameters["@projectID"].Value = projectID;
-	queryCommand.Parameters["@itemType"].Value = itemType;
+	queryCommand.Parameters["@id"].Value = id;
+	queryCommand.Parameters["@projectItemID"].Value = projectItemID;
+	queryCommand.Parameters["@name"].Value = name;
 	queryCommand.Parameters["@title"].Value = title;
 	queryCommand.Parameters["@description"].Value = description;
-	queryCommand.Parameters["@html"].Value = html;
+	queryCommand.Parameters["@directory"].Value = directory;
+	queryCommand.Parameters["@isAchived"].Value = isAchived;
 	
 using (SqlDataReader reader = queryCommand.ExecuteReader())
 	{
 		if (reader.Read())
 		{
-			returnID = reader["ProjectItemID"].ToString();
+			returnID = reader["SlideshowID"].ToString();
 		}
 	}
 }//END TRY

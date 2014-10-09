@@ -1,5 +1,5 @@
 //set database table:
-var dataItem="ProjectItem";
+var dataItem="Slideshow";
 
 var request = require("request")
 var clean = require("./clean")
@@ -158,11 +158,13 @@ catch (Exception ex)
 
 li.Add(result);
 string sJSON = oSerializer.Serialize(li);
-context.Response.Write(sJSON);              
+context.Response.Write(sJSON);  
+
+
 ***/});
 
 writeInline("\n\n\n");
-	
+
 	writeSelectJson(getRequest);
 
 	writeInline("public string Insert"+dataItem+"( ref string returnID " );
@@ -231,7 +233,7 @@ writeInline("\n\n\n");
     writeSelectJson("\t{");
         writeSelectJson("\t\tif (reader.Read())");
         writeSelectJson("\t\t{");
-            writeSelectJson("\t\t\treturnID = reader[\""+dataItem+"ID\"].ToString();");
+            writeSelectJson("\t\t\treturnID = reader[\"returnID\"].ToString();");
         writeSelectJson("\t\t}");
     writeSelectJson("\t}");
     writeSelectJson("}//END TRY");

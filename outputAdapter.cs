@@ -1,5 +1,5 @@
 
-        public string GetProjectItem(ref DataTable dtReturn)
+        public string GetSlideshow(ref DataTable dtReturn)
         {
             string returnMessage = "";
             SqlConnection thisConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
@@ -13,7 +13,7 @@
                 // Open Connection
                 thisConnection.Open();
 
-                spCommand.CommandText = "Extranet_SelectProjectItem";
+                spCommand.CommandText = "Extranet_SelectSlideshow";
 
                 SqlDataReader reader = spCommand.ExecuteReader();
                 dtReturn.Load(reader);
@@ -21,7 +21,7 @@
 
             catch (Exception ex)
             {
-                Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"), "Error select ProjectItem files: " + ex.Message);
+                Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"), "Error select Slideshow files: " + ex.Message);
             }
             finally
             {
