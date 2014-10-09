@@ -1,0 +1,17 @@
+{
+  "name": "events",
+  "version": "0.0.0",
+  "description": "",
+  "main": "events.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dropbox": "^0.10.2",
+    "dropbox-node": "^0.4.0",
+    "string": "^1.8.1",
+    "underscore": "^1.6.0"
+  }
+}

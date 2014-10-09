@@ -1,0 +1,1 @@
+to run: node clean.js | node eventsGoogle.js | node transfer.js
