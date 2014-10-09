@@ -59,15 +59,32 @@ request({
 	//create select json
 
 	//START GET REQUEST
-	
-	var getRequest = M(function(){
+var getRequest = M(function(){
+/***
+public class Result
+{
+    public string error { get; set; }
+    public bool success { get; set; }
+}
+***/});
+
+writeSelectJson(getRequest);
+
+getRequest = M(function(){
   /***
-  	ExtranetDataAccess extranetData = new ExtranetDataAccess();
-	try
-    {
-    	string returnID="";
-        string returnMessage = "";
-		               
+List<Result> li = new List<Result>();
+context.Response.ContentType = "application/json";
+JavaScriptSerializer oSerializer = new JavaScriptSerializer();
+
+ExtranetDataAccess extranetData = new ExtranetDataAccess();
+
+Result result = new Result();
+
+try
+{
+    string returnID="";
+    string returnMessage = "";
+
   ***/});
 	 
 	writeSelectJson(getRequest);
@@ -76,11 +93,11 @@ request({
   		_.map(value , function(value, key) {
   			if(value.type=="int")
 			{
-				writeSelectJson("\t int " +value.name + "=extranetData.getInt(context.Request[\""+value.name+"\"]); " );
+				writeSelectJson("\tint " +value.name + "=extranetData.getInt(context.Request[\""+value.name+"\"]); " );
 			}
 			else
 			{
-				writeSelectJson("\t string " +value.name + "=extranetData.getStringFromObject(context.Request[\""+value.name+"\"]); " );
+				writeSelectJson("\tstring " +value.name + "=extranetData.getStringFromObject(context.Request[\""+value.name+"\"]); " );
 			}
   			 
 		});//end _.map(value , function(value, key) {
@@ -88,7 +105,7 @@ request({
 
 		writeInline("\n\n\n");
 
-	writeInline("Logger.ErrorLog(HttpContext.Current.Server.MapPath(\"~/Logs/Log\"),");
+	writeInline("\tLogger.ErrorLog(HttpContext.Current.Server.MapPath(\"~/Logs/Log\"),");
 
 	_.map(jsonData, function(value, key) {
   		_.map(value , function(value, key) {
@@ -132,15 +149,19 @@ request({
 	writeLine("\t\tresult.success=true;");
 	writeLine("\t}");
 		 getRequest = M(function(){
-  /***
-  	}
-    catch (Exception ex)
-    {
-        Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"), "Error getting sent request: " + ex.Message);
-    }
-		               
-  ***/});
+/***
+}
+catch (Exception ex)
+{
+	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"), "Error getting sent request: " + ex.Message);
+}	 
 
+li.Add(result);
+string sJSON = oSerializer.Serialize(li);
+context.Response.Write(sJSON);              
+***/});
+
+writeInline("\n\n\n");
 	
 	writeSelectJson(getRequest);
 
