@@ -17,21 +17,19 @@ try
   string returnMessage = "";
 
 	int id=extranetData.getInt(context.Request["id"]); 
-	int projectItemID=extranetData.getInt(context.Request["projectItemID"]); 
-	string name=extranetData.getStringFromObject(context.Request["name"]); 
+	int clientID=extranetData.getInt(context.Request["clientID"]); 
+	int typeID=extranetData.getInt(context.Request["typeID"]); 
 	string title=extranetData.getStringFromObject(context.Request["title"]); 
 	string description=extranetData.getStringFromObject(context.Request["description"]); 
-	string directory=extranetData.getStringFromObject(context.Request["directory"]); 
-	string isAchived=extranetData.getStringFromObject(context.Request["isAchived"]); 
 
 
 
-	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"),+",id: "+id+",projectItemID: "+projectItemID+",name: "+name+",title: "+title+",description: "+description+",directory: "+directory+",isAchived: "+isAchived);
+	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"),+",id: "+id+",clientID: "+clientID+",typeID: "+typeID+",title: "+title+",description: "+description);
 
 
 
 
-	returnMessage= extranetData.InsertSlideshow( ref returnID , id, projectItemID, name, title, description, directory, isAchived);
+	returnMessage= extranetData.UpdateProject( , id, clientID, typeID, title, description);
 
 	if(returnMessage!="")
 	{
@@ -49,6 +47,8 @@ try
 }
 catch (Exception ex)
 {
+    result.success=false;
+    result.error=ex.Message;
 	Logger.ErrorLog(HttpContext.Current.Server.MapPath("~/Logs/Log"), "Error getting sent request: " + ex.Message);
 }	 
 
@@ -57,42 +57,32 @@ string sJSON = oSerializer.Serialize(li);
 context.Response.Write(sJSON);  
 
 
-public string InsertSlideshow( ref string returnID , int id, int projectItemID, string name, string title, string description, string directory, string isAchived)
+public string UpdateProject(  , int id, int clientID, int typeID, string title, string description)
 
 {string returnMessage = "";
 
 SqlConnection thisConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
-SqlCommand queryCommand = thisConnection.CreateCommand();
-queryCommand.CommandType = CommandType.StoredProcedure;
+SqlCommand spCommand = thisConnection.CreateCommand();
+spCommand.CommandType = CommandType.StoredProcedure;
 
 try
 {
 	thisConnection.Open();
-	queryCommand.CommandText = "Extranet_InsertSlideshow";
-	queryCommand.Parameters.Add("@id", SqlDbType.Int );
-	queryCommand.Parameters.Add("@projectItemID", SqlDbType.Int );
-	queryCommand.Parameters.Add("@name", SqlDbType.Text, 500);
-	queryCommand.Parameters.Add("@title", SqlDbType.Text, 250);
-	queryCommand.Parameters.Add("@description", SqlDbType.Text);
-	queryCommand.Parameters.Add("@directory", SqlDbType.Text, 250);
+spCommand.CommandText = "Extranet_UpdateProject";
+spCommand.Parameters.Add("@id", SqlDbType.Int );
+spCommand.Parameters.Add("@clientID", SqlDbType.Int );
+spCommand.Parameters.Add("@typeID", SqlDbType.Int );
+spCommand.Parameters.Add("@title", SqlDbType.Text, 250);
+spCommand.Parameters.Add("@description", SqlDbType.Text);
 
 
-	queryCommand.Parameters["@id"].Value = id;
-	queryCommand.Parameters["@projectItemID"].Value = projectItemID;
-	queryCommand.Parameters["@name"].Value = name;
-	queryCommand.Parameters["@title"].Value = title;
-	queryCommand.Parameters["@description"].Value = description;
-	queryCommand.Parameters["@directory"].Value = directory;
-	queryCommand.Parameters["@isAchived"].Value = isAchived;
-	
-using (SqlDataReader reader = queryCommand.ExecuteReader())
-	{
-		if (reader.Read())
-		{
-			returnID = reader["SlideshowID"].ToString();
-		}
-	}
+	spCommand.Parameters["@id"].Value = id;
+	spCommand.Parameters["@clientID"].Value = clientID;
+	spCommand.Parameters["@title"].Value = title;
+	spCommand.Parameters["@typeID"].Value = typeID;
+	spCommand.ExecuteReader();
 }//END TRY
+	spCommand.Parameters["@description"].Value = description;
 catch (Exception ex) 
 { 
     returnMessage = ex.Message;

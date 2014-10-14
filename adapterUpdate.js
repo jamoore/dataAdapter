@@ -1,5 +1,5 @@
 //set database table:
-var dataItem="ProjectType";
+var dataItem="Project";
 
 var request = require("request")
 var clean = require("./clean")
@@ -20,7 +20,7 @@ var jsonData;
 var templateGetData="templateGetData.cs";
 var outputAdapter="outputAdapter.cs";
 var outputSelectJson="outputSelectJson.ashx";
-
+var outputSQL="outputSQL.sql";
 
 var url = "https://script.google.com/macros/s/AKfycbzM_a6r68CIfpX4bOh3UiYXoTYXrf8xQ448Mg1shrR67GibDGE/exec?spreadsheet=1PcZjEkJA5KoKpllsvm9oBFy6NakyQI7tWyg2gjUvczs&sheet=adapter"
 
@@ -126,7 +126,7 @@ try
 	//START DATA ACCESS
 
 	writeInline("\n\n" );
-	writeInline("\treturnMessage= extranetData.Insert"+dataItem+"( ref returnID " );
+	writeInline("\treturnMessage= extranetData.Update"+dataItem+"( " );
 
 	_.map(jsonData, function(value, key) {
 	  		_.map(value , function(value, key) {
@@ -148,7 +148,8 @@ try
 	writeLine("\t{");
 	writeLine("\t\tresult.success=true;");
 	writeLine("\t}");
-		 getRequest = M(function(){
+		 
+getRequest = M(function(){
 /***
 }
 catch (Exception ex)
@@ -165,11 +166,12 @@ context.Response.Write(sJSON);
 
 ***/});
 
+
 writeInline("\n\n\n");
 
 	writeSelectJson(getRequest);
 
-	writeInline("public string Insert"+dataItem+"( ref string returnID " );
+	writeInline("public string Update"+dataItem+"(  " );
 
 	
 	_.map(jsonData, function(value, key) {
@@ -200,7 +202,7 @@ writeInline("\n\n\n");
     writeSelectJson("{");
     writeSelectJson("\tthisConnection.Open();");
 
-    writeSelectJson("\spCommand.CommandText = \"Extranet_Insert"+dataItem+"\";");
+    writeSelectJson("\spCommand.CommandText = \"Extranet_Update"+dataItem+"\";");
 
 
 	_.map(jsonData, function(value, key) {
@@ -231,13 +233,7 @@ writeInline("\n\n\n");
 		});//end _.map(value , function(value, key) {
 	});//_.map(data, function(value, key) {
 
-	writeSelectJson("\t\nusing (SqlDataReader reader = spCommand.ExecuteReader())");
-    writeSelectJson("\t{");
-        writeSelectJson("\t\tif (reader.Read())");
-        writeSelectJson("\t\t{");
-            writeSelectJson("\t\t\treturnID = reader[\"returnID\"].ToString();");
-        writeSelectJson("\t\t}");
-    writeSelectJson("\t}");
+	writeSelectJson("\tspCommand.ExecuteReader();");
     writeSelectJson("}//END TRY");
 
 
@@ -261,7 +257,58 @@ return returnMessage;
     writeSelectJson("}");
 
  
+
+    _.map(jsonData, function(value, key) {
+	  		_.map(value , function(value, key) {
+	  			
+  					writeLineSQL("@"+ value.name +" AS " + value.type);
+  				
+			});//end _.map(value , function(value, key) {
+		});//_.map(data, function(value, key) {	
+
+	writeLineSQL("\n\n\n");
+
+
+	writeLineSQL("UPDATE "+dataItem+" SET ");	
+
+	_.map(jsonData, function(value, key) {
+  		_.map(value , function(value, key) {
+  			
+			writeLineSQL( value.name +"=@" + value.name);
+				
+		});//end _.map(value , function(value, key) {
+	});//_.map(data, function(value, key) {
+
+		writeLineSQL("WHERE "+jsonData.adapter[0].name+" = @"+jsonData.adapter[0].name);	
+
 });//end request
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  functions
 
 function writeSelectJson(data)
 {
@@ -272,20 +319,33 @@ function writeSelectJson(data)
 
 function writeInline(data)
 {
-
 	fsList.appendFile(outputSelectJson,data , function (err) {
 			  		if (err) throw err;
 			  		 
 		});	
-
 }
 
 function writeLine(data)
 {
-
 	fsList.appendFile(outputSelectJson,data+"\n" , function (err) {
 			  		if (err) throw err;
 			  		 
 		});	
+}
 
+
+function writeInlineSQL(data)
+{
+	fsList.appendFile(outputSQL,data , function (err) {
+			  		if (err) throw err;
+			  		 
+		});	
+}
+
+function writeLineSQL(data)
+{
+	fsList.appendFile(outputSQL,data+"\n" , function (err) {
+			  		if (err) throw err;
+			  		 
+		});	
 }

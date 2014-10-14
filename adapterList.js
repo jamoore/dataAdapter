@@ -1,5 +1,5 @@
 //set database table:
-var dataItem="ProjectItemType";
+var dataItem="SlideshowItem";
 
 var request = require("request")
 var clean = require("./clean")

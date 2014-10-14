@@ -25,6 +25,16 @@ module.exports = {
 
 	});
 
+	fs.writeFile("outputSQL.sql", "", function(err) {
+    
+    if(err) {
+        console.log(err);
+    } else {
+        console.log("outputSQL.sql cleared");
+    }
+
+	});
+
 
   } 
 };
